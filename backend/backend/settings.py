@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from environs import Env
-from collections import OrderedDict
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
@@ -144,9 +144,3 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
 }
-
-# Configuration table with constance lib
-
-CONSTANCE_BACKEND = "constance.backends.database.DatabaseBackend"
-CONSTANCE_CONFIG = {}
-CONSTANCE_CONFIG_FIELDSETS = OrderedDict()

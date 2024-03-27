@@ -145,23 +145,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-constance"
-version = "3.1.0"
-description = "Django live settings with pluggable backends, including Redis."
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "django-constance-3.1.0.tar.gz", hash = "sha256:2b96e51de63751ef63f8f92f74e0f6aea30fb6453f3a736c21e1f8b3f6cf0b4f"},
-    {file = "django_constance-3.1.0-py3-none-any.whl", hash = "sha256:6242486a346e396d765a9333d17f3101c8613cabc92e0b98dcb70c2a391bc53b"},
-]
-
-[package.dependencies]
-django-picklefield = "*"
-
-[package.extras]
-redis = ["redis"]
-
-[[package]]
 name = "django-cors-headers"
 version = "4.3.1"
 description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
@@ -175,23 +158,6 @@ files = [
 [package.dependencies]
 asgiref = ">=3.6"
 Django = ">=3.2"
-
-[[package]]
-name = "django-picklefield"
-version = "3.1"
-description = "Pickled object field for Django"
-optional = false
-python-versions = ">=3"
-files = [
-    {file = "django-picklefield-3.1.tar.gz", hash = "sha256:c786cbeda78d6def2b43bff4840d19787809c8909f7ad683961703060398d356"},
-    {file = "django_picklefield-3.1-py3-none-any.whl", hash = "sha256:d77c504df7311e8ec14e8b779f10ca6fec74de6c7f8e2c136e1ef60cf955125d"},
-]
-
-[package.dependencies]
-Django = ">=3.2"
-
-[package.extras]
-tests = ["tox"]
 
 [[package]]
 name = "djangorestframework"
@@ -567,4 +533,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "24b7cee4ee35f974a8d73175441d68aca6962cab4a65e21e7a245a93784f86a7"
+content-hash = "2b0f9e53526dfc714b7295034d2b8bea0bc3cf39c4a1ad50da998269f9dfd3b9"
