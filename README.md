@@ -1,13 +1,30 @@
-# Template React + Django
+# Desafio Neurotech
 
-React-Vite App (TS) with Django Template (Just README)
+Develop a service, that constantly checks the currency exchange rate from Real to US-Dollar (1 BRL = x USD). \
+Requirements : \
+· The check period has to be configurable \
+· The results are stored in a database. The database access does not need to be fully implemented, an interface is sufficient. \
+· The service has an HTTP-Resource with the following endpoints (The protocol design is up to you): \
+o Get latest rate \
+o Get historical rates from startDate to endDate \
+· Please ensure the functionality of the business logic using unit-tests \
+· The exchange rate can be taken from a public service or be mocked. \
+· Please describe in a few sentences and/or with a diagram how you planned the project and architecture. \
+· The project must be on Github \
+· The API Must be implemented using any language, front is not necessary but it would be a icing on the cake \
+· Feel free to use any library you want for this project, there are no limitations! \
+This API might be helpful: <https://rapidapi.com/fixer/api/fixer-currency/>
 
-## Dependencies
+## Versões
 
 - Python vX.X.X
 - Poetry vX.X.X
-- Node.js v18.18.0
-- npm v10.2.0
+- Node.js v20.12.0
+- npm v10.5.0
+
+## Estrutura
+
+Mais detalhes podem ser visualizados na documentação de cada parte do projeto (`/backend` e `/frontend`).
 
 ## Desenvolvimento local
 
@@ -19,7 +36,7 @@ Certifique-se de que está usando a versão correta do `Python`.
 
 Veja as dependências no arquivo `./backend/pyproject.toml`.
 
-#### Instruções:
+#### Instruções
 
 - Crie um ambiente virtual para desenvolvimento, conforme os passos abaixo:
 
@@ -62,7 +79,7 @@ Sempre que fizer uma alteração relacionado a banco de dados (modelos, serializ
   python manage.py makemigrations && python manage.py migrate
 ```
 
-#### Criando banco local:
+#### Criando banco local
 
 - Atualizar o arquivo `.env` com as credenciais desejadas (variáveis de ambiente que começam com `DB_`).
 
@@ -86,7 +103,7 @@ Certifique-se de que está usando o `Prettier` como formatador oficial para o Vs
 
 Veja as dependências no arquivo `./frontend/package.json`.
 
-#### Instruções:
+#### Instruções
 
 - Instale os pacotes necessários e os atualize para a última versão (se tiver algum problema, rode `npm i` antes do update, mas geralmente não é necessário):
 
@@ -95,7 +112,7 @@ Veja as dependências no arquivo `./frontend/package.json`.
   npm update --save
 ```
 
-- Atualize o arquivo `.env`.
+- Atualize o arquivo `.env` (a princípio, para rodar localmente, as variáveis podem ter o mesmo valor presente em `.env.default`).
 
 - Em seguida, digite a linha de comando abaixo no terminal:
 
