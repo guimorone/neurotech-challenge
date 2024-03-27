@@ -17,8 +17,8 @@ This API might be helpful: <https://rapidapi.com/fixer/api/fixer-currency/>
 
 ## Versões
 
-- Python vX.X.X
-- Poetry vX.X.X
+- Python v3.12.2
+- Poetry v1.8.2
 - Node.js v20.12.0
 - npm v10.5.0
 

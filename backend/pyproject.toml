@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Guilherme <guimorone@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Django = "^5.0.3"
+django-cors-headers = "^4.3.1"
+djangorestframework = "^3.15.1"
+environs = "^11.0.0"
+whitenoise = "^6.6.0"
+psycopg2-binary = "^2.9.9"
+forex-python = "^1.8"
+django-constance = {extras = ["database"], version = "^3.1.0"}
+
+
+[build-system]
+requires =  ["poetry-core==1.8.2"]
+build-backend = "poetry.core.masonry.api"
