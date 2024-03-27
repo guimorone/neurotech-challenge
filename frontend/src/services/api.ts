@@ -1,21 +1,19 @@
-import axios from 'axios';
-import type { AxiosRequestConfig, Method } from 'axios';
+import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from 'axios';
 
 const api = axios.create({ baseURL: `${import.meta.env.VITE_BACKEND_URL}` });
 
 export async function httpRequest(
-	baseUrl: string,
-	endpoint: string,
-	method: Method,
-	additionalConfig?: AxiosRequestConfig<any>
-): Promise<any> {
-	0;
-	const url = `/${baseUrl}/${endpoint}`;
-	const config = { method, ...additionalConfig };
+  baseUrl: string,
+  endpoint: string,
+  method: Method,
+  additionalConfig?: AxiosRequestConfig<any>
+): Promise<AxiosResponse<any, any>> {
+  const url = `/${baseUrl}/${endpoint}`;
+  const config = { method, ...additionalConfig };
 
-	const response = await api(url, config);
+  const response = await api(url, config);
 
-	return 'data' in response ? response.data : response;
+  return response;
 }
 
 export default api;
