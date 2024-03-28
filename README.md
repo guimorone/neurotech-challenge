@@ -15,16 +15,35 @@ o Get historical rates from startDate to endDate \
 · Feel free to use any library you want for this project, there are no limitations! \
 This API might be helpful: <https://rapidapi.com/fixer/api/fixer-currency/>
 
+## Para rodar o projeto de maneira rápida e simples
+
+Utilizando `docker` (mais especificamente `docker compose`), é possível rodar o projeto de maneira rápida e simples. Para isso, basta seguir os passos abaixo:
+
+1. "Set" das variáveis de ambiente:
+
+- Crie um arquivo `.env` na raíz do projeto, na raíz da pasta `/frontend` e na raíz da pasta `/backend`.
+- Copie o conteúdo do arquivo `.env.default` para os arquivos `.env` criados ou baseie-se no arquivo `.env.template` para criar as variáveis de ambiente.
+
+2. Na pasta raíz do projeto, rode o comando abaixo:
+
+```sh
+  docker compose up -d
+```
+
+Pronto, o projeto estará rodando na seguinte URL: <http://127.0.0.1:5173>
+
+Para parar o projeto, rode o comando abaixo:
+
+```sh
+  docker compose down
+```
+
 ## Versões
 
 - Python v3.12.2
 - Poetry v1.8.2
 - Node.js v20.12.0
 - npm v10.5.0
-
-## Estrutura
-
-Mais detalhes podem ser visualizados na documentação de cada parte do projeto (`/backend` e `/frontend`).
 
 ## Desenvolvimento local
 
@@ -47,13 +66,13 @@ Veja as dependências no arquivo `./backend/pyproject.toml`.
 ou
 
 ```sh
-cd backend && pyenv virtualenv X.X.X venv-name && pyenv activate venv-name
+cd backend && pyenv virtualenv 3.12.2 venv-name && pyenv activate venv-name
 ```
 
 - Instale os pacotes necessários e os atualize para a última versão (se tiver algum problema, rode `poetry install` antes do update, mas geralmente não é necessário):
 
 ```sh
-  pip install "poetry==X.X.X" && poetry update
+  pip install "poetry==1.8.2" && poetry update
 ```
 
 - Atualize o arquivo `.env`.

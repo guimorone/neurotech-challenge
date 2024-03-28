@@ -1,0 +1,57 @@
+x-backend-commom: &backend-commom
+  restart: always
+  tty: true
+  ports:
+    - 8000:8000
+
+x-frontend-commom: &frontend-commom
+  restart: always
+  tty: true
+  ports:
+    - 5173:80
+  healthcheck:
+    test: ['CMD', 'curl', 'http://127.0.0.1:80']
+    interval: 5s
+    timeout: 15s
+    retries: 5
+    start_period: 10s
+
+services:
+  postgres_db:
+    container_name: neurotech-challenge-database
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT:-5432}:5432
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', $DB_NAME]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  backend:
+    container_name: neurotech-challenge-backend
+    build:
+      context: ./backend
+    image: neurotech-challenge/backend
+    depends_on:
+      - postgres_db
+    <<: *backend-commom
+
+  frontend:
+    container_name: neurotech-challenge-frontend
+    build:
+      context: ./frontend
+    image: neurotech-challenge/frontend
+    <<: *frontend-commom
+
+volumes:
+  postgres_db:
+    driver: local
