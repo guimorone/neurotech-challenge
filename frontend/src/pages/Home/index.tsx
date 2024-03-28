@@ -23,7 +23,7 @@ const Home: FC = () => {
   const [BRLValue, setBRLValue] = useState<number>(INITIAL_AMOUNT);
   const [USDValue, setUSDValue] = useState<number>(INITIAL_AMOUNT);
   const { isError, error, data, isFetching } = useQuery<CurrencyRateData>({
-    queryKey: ['api', 'currency', 'GET'],
+    queryKey: ['api', 'currency-rates', 'POST'],
     enabled: checkPeriod > 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -32,8 +32,6 @@ const Home: FC = () => {
     refetchIntervalInBackground: true,
     staleTime: checkPeriod * 1000,
   });
-
-  console.log(currencies);
 
   const tableTabs: (TableProps & { label: string; current: boolean })[] = [
     {
@@ -44,7 +42,7 @@ const Home: FC = () => {
       data: latestCurrencies,
       clearButtonFunction: () => {
         setLatestCurrencies([]);
-        localStorage.clear();
+        localStorage.removeItem('latestCurrencies');
       },
     },
     {
@@ -55,7 +53,7 @@ const Home: FC = () => {
       data: latestCurrencies,
       clearButtonFunction: () => {
         setLatestCurrencies([]);
-        localStorage.clear();
+        localStorage.removeItem('latestCurrencies');
       },
     },
   ];
