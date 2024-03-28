@@ -33,8 +33,8 @@ class CurrencyRatesViewSet(ModelViewSet):
 
     def create(self, request: Request, *args, **kwargs) -> Response:
         try:
-            base_currency = request.data.get("currency")
-            to_currency = request.data.get("rates")
+            base_currency = request.data.get("base_currency")
+            to_currency = request.data.get("to_currency")
 
             if not base_currency or not to_currency:
                 return Response("Os campos `currency` e `rates` são obrigatórios!", status=status.HTTP_400_BAD_REQUEST)
