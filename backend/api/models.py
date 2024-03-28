@@ -20,7 +20,7 @@ class CurrencyRatesModel(models.Model):
 
 class CurrenciesModel(models.Model):
     currency = models.CharField(primary_key=True, max_length=3)
-    rates = models.ManyToManyField(CurrencyRatesModel)
+    rates = models.ManyToManyField(CurrencyRatesModel, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 

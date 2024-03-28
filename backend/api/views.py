@@ -29,7 +29,27 @@ class CurrenciesViewSet(ModelViewSet):
     queryset = CurrenciesModel.objects.all()
     serializer_class = CurrencySerializer
 
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list), *args, **kwargs)
+        if serializer.is_valid(raise_exception=False):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CurrencyRatesViewSet(ModelViewSet):
     queryset = CurrencyRatesModel.objects.all()
     serializer_class = CurrencyRateSerializer
+
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list), *args, **kwargs)
+        if serializer.is_valid(raise_exception=False):
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

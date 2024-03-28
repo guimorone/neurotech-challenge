@@ -9,6 +9,6 @@ router.register(r"currencies", CurrenciesViewSet, basename="Currencies")
 router.register(r"currency-rates", CurrencyRatesViewSet, basename="CurrencyRates")
 
 urlpatterns = [
-    path("currency", get_current_rates),
+    path("currency/", get_current_rates),
     path("", include(router.urls)),
 ]

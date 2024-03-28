@@ -29,7 +29,7 @@ DEBUG = env.bool("DJANGO_DEBUG_MODE", default=True)
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 
 # Application definition
