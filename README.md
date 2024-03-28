@@ -30,9 +30,9 @@ Utilizando `docker` (mais especificamente `docker compose`), é possível rodar 
   docker compose up -d
 ```
 
-Pronto, o projeto estará rodando na seguinte URL: <http://127.0.0.1:5173>
+Com isso, um banco de dados postgres local será criado e a interface do projeto estará rodando em <http://127.0.0.1:5173>
 
-Para parar o projeto, rode o comando abaixo:
+Para parar a aplicação, rode o comando abaixo:
 
 ```sh
   docker compose down
@@ -46,6 +46,9 @@ Para parar o projeto, rode o comando abaixo:
 - npm v10.5.0
 
 ## Desenvolvimento local
+
+Caso deseje rodar o projeto localmente sem utilizar Docker, aqui estão as instruções.
+Lembre-se de que é necessário configurar um banco de dados Postgres corretamente. Utilizando docker, tudo isso já está abstraído, e mais informações podem ser encontradas no arquivo `docker-compose.yml`, na raíz do projeto.
 
 ### Back-End
 
@@ -75,7 +78,7 @@ cd backend && pyenv virtualenv 3.12.2 venv-name && pyenv activate venv-name
   pip install "poetry==1.8.2" && poetry update
 ```
 
-- Atualize o arquivo `.env`.
+- Atualize o arquivo `.env`, baseando-se no `.env.template`.
 
 - Se for necessário atualizar sua pasta `migrations`, rode o comando abaixo:
 
@@ -96,22 +99,6 @@ Sempre que fizer uma alteração relacionado a banco de dados (modelos, serializ
 
 ```sh
   python manage.py makemigrations && python manage.py migrate
-```
-
-#### Criando banco local
-
-- Atualizar o arquivo `.env` com as credenciais desejadas (variáveis de ambiente que começam com `DB_`).
-
-- Subir o banco:
-
-```sh
-docker compose up -d
-```
-
-- Fechar o banco:
-
-```sh
-docker compose down
 ```
 
 ### Front-End
