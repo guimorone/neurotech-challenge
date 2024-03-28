@@ -36,8 +36,6 @@ export type IconType =
   | ((props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => JSX.Element);
 
 export type CurrencyType = 'BRL' | 'USD' | 'EUR';
-export type CurrencyRateData = { [key in CurrencyType]: [CurrencyType, number][] };
-export type SavedCurrencies = (CurrencyRateData & { datetime: string })[];
 
 export type DBCurrencyRate = {
   base_currency: CurrencyType;

@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, type FC, type ChangeEventHandler } from 'react';
-import { Spinner } from 'flowbite-react';
+import { Spinner, FooterDivider } from 'flowbite-react';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
 import { useQuery } from '@tanstack/react-query';
 import Input from '../../components/Input';
@@ -8,22 +8,30 @@ import { formatNumber, classNames, convertCurrencyToNumber } from '../../utils';
 import { useTypedOutletContext } from '../../utils/hooks';
 import { INITIAL_AMOUNT, INITIAL_CHECK_PERIOD } from '../../constants';
 import type { AxiosError } from 'axios';
-import type { CurrencyType, CurrencyRateData, SavedCurrencies, IntRange } from '../../@types';
+import type { CurrencyType, DBCurrencyRate, IntRange } from '../../@types';
 
 type TabIndex = IntRange<0, 2>;
 
 const Home: FC = () => {
   const { currencies } = useTypedOutletContext();
   const [currentTabIndex, setCurrentTabIndex] = useState<TabIndex>(0);
-  const [latestCurrencies, setLatestCurrencies] = useState<SavedCurrencies>(
+  const [latestCurrencies, setLatestCurrencies] = useState<
+    (Omit<DBCurrencyRate, 'created_at'> & { created_at: string })[]
+  >(
     localStorage.getItem('latestCurrencies') ? JSON.parse(localStorage.getItem('latestCurrencies') as string) : []
   );
   const [checkPeriod, setCheckPeriod] = useState<number>(INITIAL_CHECK_PERIOD);
-  const [currentCurrency, setCurrentCurrency] = useState<CurrencyType>('BRL');
-  const [BRLValue, setBRLValue] = useState<number>(INITIAL_AMOUNT);
-  const [USDValue, setUSDValue] = useState<number>(INITIAL_AMOUNT);
-  const { isError, error, data, isFetching } = useQuery<CurrencyRateData>({
-    queryKey: ['api', 'currency-rates', 'POST'],
+  const [currentBaseCurrency, setCurrentBaseCurrency] = useState<CurrencyType>('BRL');
+  const [currentToCurrency, setCurrentToCurrency] = useState<CurrencyType>('USD');
+  const [baseCurrencyValue, setBaseCurrencyValue] = useState<number>(INITIAL_AMOUNT);
+  const [toCurrencyValue, setToCurrencyValue] = useState<number>(INITIAL_AMOUNT);
+  const { isError, error, data, isFetching, refetch } = useQuery<DBCurrencyRate[]>({
+    queryKey: [
+      'api',
+      'currency-rates',
+      'POST',
+      { data: { base_currency: currentBaseCurrency, to_currency: currentToCurrency } },
+    ],
     enabled: checkPeriod > 0,
     refetchOnMount: 'always',
     refetchOnWindowFocus: true,
@@ -33,12 +41,72 @@ const Home: FC = () => {
     staleTime: checkPeriod * 1000,
   });
 
+  useEffect(() => {
+    refetch();
+  }, [currentBaseCurrency, currentToCurrency]);
+
+  const currentRates = useMemo(() => {
+    if (isError || !data || !data.length) return latestCurrencies;
+
+    return data;
+  }, [isError, data, latestCurrencies]);
+
+  const currentRate = useMemo(
+    () =>
+      currentRates?.find(
+        ({ base_currency, to_currency }) =>
+          currentBaseCurrency == base_currency && currentToCurrency == to_currency
+      )?.rate || 1,
+    [currentBaseCurrency, currentToCurrency, currentRates]
+  );
+
+  const updateInput = (value: number): void => {
+    if (!currentRates) return;
+
+    setBaseCurrencyValue(value);
+    setToCurrencyValue(value * currentRate);
+  };
+
+  useEffect(() => {
+    updateInput(baseCurrencyValue);
+  }, [currentRate]);
+
+  useEffect(() => {
+    if (isError && error) alert((error as AxiosError)?.response?.data || error);
+  }, [isError, error]);
+
+  useEffect(() => {
+    if (isFetching || isError || !currentRates) return;
+
+    setLatestCurrencies(prev => {
+      const formattedCurrentRates = currentRates.map(cr => {
+        const createdAtDate: Date = typeof cr.created_at === 'string' ? new Date(cr.created_at) : cr.created_at;
+
+        return {
+          ...cr,
+          created_at: createdAtDate.toLocaleDateString() + ' às ' + createdAtDate.toLocaleTimeString(),
+        };
+      });
+      const newLatestCurrencies = prev.concat(formattedCurrentRates);
+
+      localStorage.setItem('latestCurrencies', JSON.stringify(newLatestCurrencies));
+
+      return newLatestCurrencies;
+    });
+  }, [isFetching, isError, currentRates]);
+
   const tableTabs: (TableProps & { label: string; current: boolean })[] = [
     {
       title: 'Cotações anteriores',
       description: 'Acompanhe os últimos valores registrados neste dispositivo.',
       label: 'Armazenamento local',
       current: currentTabIndex === 0,
+      columns: [
+        { label: 'Moeda Base', value: 'base_currency' },
+        { label: 'Moeda de Destino', value: 'to_currency' },
+        { label: 'Taxa de Câmbio', value: 'rate' },
+        { label: 'Data', value: 'created_at' },
+      ],
       data: latestCurrencies,
       clearButtonFunction: () => {
         setLatestCurrencies([]);
@@ -50,6 +118,12 @@ const Home: FC = () => {
       description: 'Acompanhe os últimos valores registrados em nosso banco de dados.',
       label: 'Banco de dados',
       current: currentTabIndex === 1,
+      columns: [
+        { label: 'Moeda Base', value: 'base_currency' },
+        { label: 'Moeda de Destino', value: 'to_currency' },
+        { label: 'Taxa de Câmbio', value: 'rate' },
+        { label: 'Data', value: 'created_at' },
+      ],
       data: latestCurrencies,
       clearButtonFunction: () => {
         setLatestCurrencies([]);
@@ -58,52 +132,16 @@ const Home: FC = () => {
     },
   ];
 
-  const currentRates: CurrencyRateData | undefined = useMemo(() => {
-    if (isError || !data || !data.BRL || !data.BRL.length || !data.USD || !data.USD.length)
-      return latestCurrencies.at(0);
-
-    return data;
-  }, [isError, data, latestCurrencies]);
-
-  const updateInput = (value: number): void => {
-    if (!currentRates) return;
-
-    if (currentCurrency === 'BRL') {
-      setBRLValue(value);
-      setUSDValue(value * currentRates.BRL[0][1]);
-    } else {
-      setBRLValue(value * currentRates.USD[0][1]);
-      setUSDValue(value);
-    }
-  };
-
-  useEffect(() => {
-    if (currentCurrency === 'BRL') updateInput(BRLValue);
-    else updateInput(USDValue);
-  }, [currentCurrency]);
-
-  useEffect(() => {
-    if (isError && error) alert((error as AxiosError)?.response?.data || error);
-  }, [isError, error]);
-
-  useEffect(() => {
-    if (isFetching || isError || !currentRates) return;
-
-    setLatestCurrencies(prev => {
-      const now = new Date();
-      const newLatestCurrencies = [
-        { ...currentRates, datetime: now.toLocaleDateString() + ' às ' + now.toLocaleTimeString() },
-        ...prev,
-      ];
-
-      localStorage.setItem('latestCurrencies', JSON.stringify(newLatestCurrencies));
-
-      return newLatestCurrencies;
-    });
-  }, [isFetching, isError, currentRates]);
-
   const handleChange: ChangeEventHandler<HTMLInputElement> = ({ target }) =>
     updateInput(convertCurrencyToNumber(target.value));
+
+  const handleSwapCurrencies = () => {
+    setCurrentBaseCurrency(currentToCurrency);
+    setBaseCurrencyValue(toCurrencyValue);
+
+    setToCurrencyValue(baseCurrencyValue);
+    setCurrentToCurrency(currentBaseCurrency);
+  };
 
   if (!currentRates) {
     if (!isFetching) return <h1 className="text-center text-red-600 text-6xl mt-12">Serviço indisponível</h1>;
@@ -125,34 +163,73 @@ const Home: FC = () => {
           Conversor de moedas
         </h1>
         <h1 className="text-center text-lg leading-8 text-gray-600">
-          {currentCurrency === 'BRL' ? 'BRL x USD' : 'USD x BRL'}
+          {`${currentBaseCurrency} x ${currentToCurrency}`}
         </h1>
       </div>
-      <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center lg:justify-between w-full h-full">
+      <div className="flex flex-col gap-y-8 items-center justify-center w-full h-full">
         <div className="space-y-8 w-full">
           <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
-            <div className={classNames(currentCurrency === 'BRL' ? 'order-1' : 'order-3')}>
-              <Input value={formatNumber(BRLValue)} onChange={handleChange} disabled={currentCurrency === 'USD'} />
+            <div className="space-y-2">
+              <div className="space-y-2 w-fit">
+                <label htmlFor="base_currency" className="block text-sm font-medium leading-6 text-gray-900">
+                  Moeda Base
+                </label>
+                <select
+                  id="base_currency"
+                  name="base_currency"
+                  className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  value={currentBaseCurrency}
+                  onChange={({ target }) => {
+                    if (currentToCurrency == target.value) setCurrentToCurrency(currentBaseCurrency);
+                    setCurrentBaseCurrency(target.value as CurrencyType);
+                  }}
+                >
+                  {currencies.map(({ currency }) => (
+                    <option key={`base_${currency}`} value={currency} disabled={currency == currentBaseCurrency}>
+                      {currency}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Input
+                value={formatNumber(baseCurrencyValue, 'currency', 'pt-BR', currentBaseCurrency)}
+                onChange={handleChange}
+              />
             </div>
-            <button
-              className="text-gray-900 hover:text-gray-800 order-2"
-              onClick={() => setCurrentCurrency(prev => (prev === 'BRL' ? 'USD' : 'BRL'))}
-            >
+            <button className="text-gray-900 hover:text-gray-800" onClick={handleSwapCurrencies}>
               <ArrowsRightLeftIcon className="h-4 md:h-6 w-auto" aria-disabled="true" />
             </button>
-            <div className={classNames(currentCurrency === 'USD' ? 'order-1' : 'order-3')}>
+            <div className="space-y-2">
+              <div className="space-y-2 w-fit">
+                <label htmlFor="to_currency" className="block text-sm font-medium leading-6 text-gray-900">
+                  Moeda de Destino
+                </label>
+                <select
+                  id="to_currency"
+                  name="to_currency"
+                  className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  value={currentToCurrency}
+                  onChange={({ target }) => {
+                    if (currentBaseCurrency == target.value) setCurrentBaseCurrency(currentToCurrency);
+                    setCurrentToCurrency(target.value as CurrencyType);
+                  }}
+                >
+                  {currencies.map(({ currency }) => (
+                    <option key={`to_${currency}`} value={currency} disabled={currency == currentToCurrency}>
+                      {currency}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Input
-                value={formatNumber(USDValue, 'currency', 'en-US', 'USD')}
+                value={formatNumber(toCurrencyValue, 'currency', 'pt-BR', currentToCurrency)}
                 onChange={handleChange}
-                disabled={currentCurrency === 'BRL'}
+                disabled
               />
             </div>
           </div>
           <p className="text-center text-xl">
-            Cotação atual &rarr;{' '}
-            {currentCurrency === 'BRL'
-              ? `1 BRL = ${currentRates.BRL[0][1].toFixed(2)} USD`
-              : `1 USD = ${currentRates.USD[0][1].toFixed(2)} BRL`}
+            Cotação atual &rarr; {`1 ${currentBaseCurrency} = ${currentRate.toFixed(2)} ${currentToCurrency}`}
           </p>
           <div className="flex flex-col items-center justify-center gap-y-2">
             <Input
@@ -172,7 +249,8 @@ const Home: FC = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-col items-center lg:items-start justify-center gap-y-4 w-full">
+        <FooterDivider />
+        <div className="flex flex-col items-center justify-center gap-y-4 w-full">
           <nav className="flex space-x-4" aria-label="Tabs">
             {tableTabs.map(({ label, current }, index) => (
               <button
