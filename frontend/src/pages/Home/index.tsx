@@ -41,7 +41,7 @@ const Home: FC = () => {
 	});
 
 	const [
-		{ data: allCurrenciesRates, isFetching: isFetchingDatabaseCurrencyRates, refetch: refetchDatabaseCurrencyRates },
+		{ data: allCurrenciesRates, refetch: refetchDatabaseCurrencyRates },
 		{ isFetching: isDeletingAll, isSuccess: isSuccessDeleteAll, isFetched: isFetchedDeleteAll },
 	] = useQueries({
 		queries: [
@@ -147,7 +147,7 @@ const Home: FC = () => {
 				{ label: 'Data', value: 'created_at' },
 			],
 			data: (allCurrenciesRates as DBCurrencyRate[]) || [],
-			isLoading: isFetchingDatabaseCurrencyRates || isDeletingAll,
+			isLoading: isDeletingAll,
 			clearButtonFunction: () => setDeleteAllCurrenciesRates(true),
 		},
 	];
