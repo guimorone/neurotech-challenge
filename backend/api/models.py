@@ -2,6 +2,7 @@ from django.db import models
 
 
 class CurrencyRatesModel(models.Model):
+    # Campo Id como chave primária (django.db.models.BigAutoField) -> Inserção automática do django
     base_currency = models.CharField(max_length=3)
     to_currency = models.CharField(max_length=3)
     rate = models.FloatField()  # Considerando o valor unitário do `base_currency`
@@ -18,7 +19,7 @@ class CurrencyRatesModel(models.Model):
 
 
 class CurrenciesModel(models.Model):
-    currency = models.CharField(max_length=3)
+    currency = models.CharField(primary_key=True, max_length=3)
     rates = models.ManyToManyField(CurrencyRatesModel)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)

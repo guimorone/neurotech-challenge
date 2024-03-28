@@ -3,7 +3,9 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.viewsets import ModelViewSet
 from forex_python.converter import CurrencyRates, RatesNotAvailableError
+from .serializers import *
 
 
 @api_view(["GET"])
@@ -21,3 +23,13 @@ def get_current_rates(_request: Request) -> Response:
         traceback.print_exc()
 
         return Response("Erro interno, tente novamente mais tarde!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CurrenciesViewSet(ModelViewSet):
+    queryset = CurrenciesModel.objects.all()
+    serializer_class = CurrencySerializer
+
+
+class CurrencyRatesViewSet(ModelViewSet):
+    queryset = CurrencyRatesModel.objects.all()
+    serializer_class = CurrencyRateSerializer
