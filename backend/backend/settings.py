@@ -26,6 +26,7 @@ SECRET_KEY = env.str("DJANGO_SECRET_KEY")
 
 DEBUG = env.bool("DJANGO_DEBUG_MODE", default=True)
 
+ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 APPEND_SLASH = False
@@ -87,7 +88,7 @@ DATABASES = {
         "NAME": env.str("DB_NAME"),
         "USER": env.str("DB_USER"),
         "PASSWORD": env.str("DB_PASSWORD"),
-        "HOST": env.str("DB_HOST"),
+        "HOST": env.str("DB_HOST_DEV") if DEBUG else env.str("DB_HOST_PROD"),
         "PORT": env.int("DB_PORT", default=5432),
         "CONN_HEALTH_CHECKS": env.bool("DB_CONN_HEALTH_CHECKS", default=True),
         "OPTIONS": env.dict("DB_OPTIONS", default={}),
