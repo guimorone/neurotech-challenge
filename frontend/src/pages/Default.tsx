@@ -13,7 +13,7 @@ export default function Default() {
 	}, [navigate, pathname]);
 
 	return (
-		<div className="max-w-7xl my-8 px-4 m-auto w-full h-full space-y-4">
+		<div className="max-w-7xl my-8 px-4 mx-auto w-full h-full space-y-4">
 			<a
 				target="_blank"
 				href={SWAGGER_DOCS}

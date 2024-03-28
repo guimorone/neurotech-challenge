@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { SavedCurrencies } from '../../@types';
 
-type TableProps = {
+export type TableProps = {
 	title: string;
 	description: string;
 	data: SavedCurrencies;

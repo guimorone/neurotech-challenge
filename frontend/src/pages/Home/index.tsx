@@ -3,13 +3,16 @@ import { Spinner } from 'flowbite-react';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
 import { useQuery } from '@tanstack/react-query';
 import Input from '../../components/Input';
-import Table from '../../components/Table';
+import Table, { type TableProps } from '../../components/Table';
 import { formatNumber, classNames, convertCurrencyToNumber } from '../../utils';
 import { INITIAL_AMOUNT, INITIAL_CHECK_PERIOD } from '../../constants';
 import type { AxiosError } from 'axios';
-import type { CurrencyType, CurrencyRateData, SavedCurrencies } from '../../@types';
+import type { CurrencyType, CurrencyRateData, SavedCurrencies, IntRange } from '../../@types';
+
+type TabIndex = IntRange<0, 2>;
 
 const Home: FC = () => {
+	const [currentTabIndex, setCurrentTabIndex] = useState<TabIndex>(0);
 	const [latestCurrencies, setLatestCurrencies] = useState<SavedCurrencies>(
 		localStorage.getItem('latestCurrencies') ? JSON.parse(localStorage.getItem('latestCurrencies') as string) : []
 	);
@@ -27,6 +30,31 @@ const Home: FC = () => {
 		refetchIntervalInBackground: true,
 		staleTime: checkPeriod * 1000,
 	});
+
+	const tableTabs: (TableProps & { label: string; current: boolean })[] = [
+		{
+			title: 'Cotações anteriores',
+			description: 'Acompanhe os últimos valores registrados neste dispositivo.',
+			label: 'Armazenamento local',
+			current: currentTabIndex === 0,
+			data: latestCurrencies,
+			clearButtonFunction: () => {
+				setLatestCurrencies([]);
+				localStorage.clear();
+			},
+		},
+		{
+			title: 'Cotações anteriores',
+			description: 'Acompanhe os últimos valores registrados em nosso banco de dados.',
+			label: 'Banco de dados',
+			current: currentTabIndex === 1,
+			data: latestCurrencies,
+			clearButtonFunction: () => {
+				setLatestCurrencies([]);
+				localStorage.clear();
+			},
+		},
+	];
 
 	const currentRates: CurrencyRateData | undefined = useMemo(() => {
 		if (isError || !data || !data.BRL || !data.BRL.length || !data.USD || !data.USD.length)
@@ -96,9 +124,9 @@ const Home: FC = () => {
 					{currentCurrency === 'BRL' ? 'BRL x USD' : 'USD x BRL'}
 				</h1>
 			</div>
-			<div className="flex flex-col lg:flex-row gap-y-8 lg:gap-x-8 lg:gap-y-0 items-center lg:items-start justify-center md:justify-between w-full">
-				<div className="space-y-8">
-					<div className="flex flex-col md:flex-row gap-y-8 gap-x-0 md:gap-y-0 md:gap-x-8 items-center">
+			<div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center lg:justify-between w-full h-full">
+				<div className="space-y-8 w-full">
+					<div className="flex flex-col md:flex-row gap-8 items-center justify-center">
 						<div className={classNames(currentCurrency === 'BRL' ? 'order-1' : 'order-3')}>
 							<Input value={formatNumber(BRLValue)} onChange={handleChange} disabled={currentCurrency === 'USD'} />
 						</div>
@@ -122,29 +150,42 @@ const Home: FC = () => {
 							? `1 BRL = ${currentRates.BRL[0][1].toFixed(2)} USD`
 							: `1 USD = ${currentRates.USD[0][1].toFixed(2)} BRL`}
 					</p>
-					{isFetching ? (
-						<p className="text-center text-lg text-indigo-600 motion-safe:animate-pulse">Atualizando cotação...</p>
-					) : isError ? (
-						<p className="text-center text-lg text-red-600">Erro ao atualizar cotação!</p>
-					) : (
-						<p className="text-center text-lg text-teal-500">Cotação atualizada!</p>
-					)}
-					<Input
-						label="Período de atualização da cotação (em segundos)"
-						type="number"
-						value={checkPeriod}
-						onChange={({ target }) => setCheckPeriod(+target.value)}
-					/>
+					<div className="flex flex-col items-center justify-center gap-y-2">
+						<Input
+							label="Período de atualização da cotação (em segundos)"
+							type="number"
+							value={checkPeriod}
+							onChange={({ target }) => setCheckPeriod(+target.value)}
+						/>
+						{isFetching ? (
+							<p className="text-center text-base md:text-lg text-indigo-600 motion-safe:animate-pulse">
+								Atualizando cotação...
+							</p>
+						) : isError ? (
+							<p className="text-center text-base md:text-lg text-red-600">Erro ao atualizar cotação!</p>
+						) : (
+							<p className="text-center text-base md:text-lg text-teal-500">Cotação atualizada!</p>
+						)}
+					</div>
 				</div>
-				<Table
-					title="Cotações anteriores"
-					description="Acompanhe os últimos valores registrados neste dispositivo."
-					data={latestCurrencies}
-					clearButtonFunction={() => {
-						setLatestCurrencies([]);
-						localStorage.clear();
-					}}
-				/>
+				<div className="flex flex-col items-center lg:items-start justify-center gap-y-4 w-full">
+					<nav className="flex space-x-4" aria-label="Tabs">
+						{tableTabs.map(({ label, current }, index) => (
+							<button
+								key={label}
+								onClick={() => setCurrentTabIndex(index as TabIndex)}
+								className={classNames(
+									current ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700',
+									'rounded-md px-3 py-2 text-sm font-medium'
+								)}
+								aria-current={current ? 'page' : undefined}
+							>
+								{label}
+							</button>
+						))}
+					</nav>
+					<Table {...tableTabs[currentTabIndex]} />
+				</div>
 			</div>
 		</main>
 	);
