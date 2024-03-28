@@ -85,7 +85,7 @@ const Home: FC = () => {
 	}
 
 	return (
-		<main className="flex flex-col items-center justify-center max-w-7xl my-12 px-4 m-auto w-full h-full gap-y-12">
+		<main className="flex flex-col items-center justify-center w-full h-full gap-y-12">
 			<div className="space-y-4">
 				<h1 className="text-center text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">Conversor de moedas</h1>
 				<h1 className="text-center text-lg leading-8 text-gray-600">
