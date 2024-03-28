@@ -15,7 +15,7 @@ class CurrencyRatesModel(models.Model):
         verbose_name = "Taxa de Câmbio"
         verbose_name_plural = "Taxas de Câmbios"
         db_table = "currency_rates"
-        ordering = ["base_currency", "to_currency", "rate", "created_at"]
+        ordering = ["base_currency", "to_currency", "created_at", "rate"]
 
 
 class CurrenciesModel(models.Model):
