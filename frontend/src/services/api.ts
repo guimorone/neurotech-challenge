@@ -8,7 +8,7 @@ export async function httpRequest(
 	method: Method,
 	additionalConfig?: AxiosRequestConfig<any>
 ): Promise<AxiosResponse<any, any>> {
-	const url = `/${baseUrl}/${endpoint}`;
+	const url = `/${baseUrl}/${endpoint}/`;
 	const config = { method, ...additionalConfig };
 
 	const response = await api(url, config);
