@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, type FC, type ChangeEventHandler } from 'react';
+import { Spinner } from 'flowbite-react';
 import { ArrowsRightLeftIcon } from '@heroicons/react/24/solid';
 import { useQuery } from '@tanstack/react-query';
 import Input from '../../components/Input';
@@ -78,9 +79,12 @@ const Home: FC = () => {
 		if (!isFetching) return <h1 className="text-center text-red-600 text-6xl mt-12">Serviço indisponível</h1>;
 
 		return (
-			<h1 className="text-center text-blue-600 text-6xl mt-12 motion-safe:animate-pulse">
-				Estabelecendo conexão com o servidor...
-			</h1>
+			<div className="flex flex-col items-center justify-center gap-y-12">
+				<h1 className="text-center text-blue-600 text-6xl mt-12 motion-safe:animate-pulse">
+					Estabelecendo conexão com o servidor...
+				</h1>
+				<Spinner size="xl" color="info" />
+			</div>
 		);
 	}
 
@@ -92,7 +96,7 @@ const Home: FC = () => {
 					{currentCurrency === 'BRL' ? 'BRL x USD' : 'USD x BRL'}
 				</h1>
 			</div>
-			<div className="flex flex-col lg:flex-row gap-y-8 lg:gap-x-8 lg:gap-y-0 items-center lg:items-start justify-center w-full">
+			<div className="flex flex-col lg:flex-row gap-y-8 lg:gap-x-8 lg:gap-y-0 items-center lg:items-start justify-center md:justify-between w-full">
 				<div className="space-y-8">
 					<div className="flex flex-col md:flex-row gap-y-8 gap-x-0 md:gap-y-0 md:gap-x-8 items-center">
 						<div className={classNames(currentCurrency === 'BRL' ? 'order-1' : 'order-3')}>
