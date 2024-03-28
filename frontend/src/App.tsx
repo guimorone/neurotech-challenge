@@ -25,7 +25,6 @@ export default function App() {
 				refetchOnMount: false,
 				refetchOnWindowFocus: false,
 				refetchOnReconnect: false,
-				// cacheTime: 0,
 				staleTime: Infinity,
 			},
 		},
