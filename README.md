@@ -139,3 +139,15 @@ ou, para ajeitar os erros de formatação também:
 ```sh
   npm run lint-fix
 ```
+
+## Troubleshoot
+
+- Caso tenha problemas com a porta do banco de dados, cheque se a porta `5432` está sendo usada por outro serviço. Caso esteja, altere a porta nos arquivos `.env` e `backend/.env`.
+- Caso tenha dificuldades em rodar o backend, por conta da variável `DJANGO_SECRET_KEY`, fale comigo diretamente ou rode o código abaixo em python e substitua o valor no arquivo `backend/.env`:
+
+```python
+  from django.core.management.utils import get_random_secret_key
+  get_random_secret_key()
+```
+
+Qualquer dúvida, estou à disposição para ajudar.
