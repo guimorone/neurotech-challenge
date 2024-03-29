@@ -78,7 +78,7 @@ class CurrencyRatesViewSet(ModelViewSet):
         try:
             qtd, _ = self.queryset.delete()
 
-            return Response(f"{qtd} elemento(s) destruído(s) com sucesso.", status=status.HTTP_200_OK)
+            return Response(f"{qtd} elemento(s) destruído(s) com sucesso.", status=status.HTTP_204_NO_CONTENT)
         except:
             traceback.print_exc()
 
