@@ -9,31 +9,11 @@ from utils.currencies import get_currency_rates
 from .serializers import *
 
 
-class CurrenciesViewSet(ModelViewSet):
-    queryset = CurrenciesModel.objects.all()
-    serializer_class = CurrencySerializer
-
-    def create(self, request: Request, *args, **kwargs) -> Response:
-        try:
-            serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list), *args, **kwargs)
-            if serializer.is_valid(raise_exception=False):
-                self.perform_create(serializer)
-                headers = self.get_success_headers(serializer.data)
-
-                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
-            traceback.print_exc()
-
-            return Response("Erro interno ao criar moeda de câmbio!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class CurrencyRatesViewSet(ModelViewSet):
     queryset = CurrencyRatesModel.objects.all()
     serializer_class = CurrencyRateSerializer
 
-    def list(self, request, *args, **kwargs) -> Response:
+    def list(self, _: Request) -> Response:
         try:
             queryset = self.filter_queryset(self.get_queryset())
 
@@ -84,7 +64,7 @@ class CurrencyRatesViewSet(ModelViewSet):
             return Response("Erro interno ao recuperar taxa de câmbio!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(methods=["DELETE"], detail=False, url_path="delete-all", url_name="delete-all")
-    def delete_all(self, _request: Request) -> Response:
+    def delete_all(self, _: Request) -> Response:
         try:
             qtd, _ = self.queryset.delete()
 

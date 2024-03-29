@@ -16,19 +16,3 @@ class CurrencyRatesModel(models.Model):
         verbose_name_plural = "Taxas de Câmbios"
         db_table = "currency_rates"
         ordering = ["base_currency", "to_currency", "created_at", "rate"]
-
-
-class CurrenciesModel(models.Model):
-    currency = models.CharField(primary_key=True, max_length=3)
-    rates = models.ManyToManyField(CurrencyRatesModel, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
-
-    def __str__(self):
-        return self.currency
-
-    class Meta:
-        verbose_name = "Moeda de Câmbio"
-        verbose_name_plural = "Moedas de Câmbio"
-        db_table = "currencies"
-        ordering = ["currency", "updated_at", "created_at"]
