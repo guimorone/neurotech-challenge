@@ -101,6 +101,26 @@ Sempre que fizer uma alteração relacionado a banco de dados (modelos, serializ
   python manage.py makemigrations && python manage.py migrate
 ```
 
+### Testes Unitários
+
+Para rodar os testes unitários, digite o comando abaixo no terminal:
+
+```sh
+  python manage.py test
+```
+
+Se quiser rodar os testes de maneira mais detalhada, digite o comando abaixo:
+
+```sh
+  python manage.py test --verbosity {0,1,2,3}
+```
+
+Um aviso pode aparecer com relação a pasta `static`, mas não se preocupe, é um aviso que não interfere no funcionamento dos testes. Caso queira que ele desapareça, basta criar um arquivo vazio na pasta `static` ou rodar o comando abaixo:
+
+```sh
+  python manage.py collectstatic
+```
+
 ### Front-End
 
 Certifique-se de que está usando o `Prettier` como formatador oficial para o VsCode. Além disso, cheque as versões do seu `Node.js` e `npm`.

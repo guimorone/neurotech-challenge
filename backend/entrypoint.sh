@@ -9,6 +9,9 @@ python manage.py migrate --no-input
 echo "${0}: Config static files..."
 python manage.py collectstatic --no-input
 
+echo "${0}: Running tests..."
+python manage.py test
+
 gunicorn backend.wsgi:application \
   --name backend \
   --bind 0.0.0.0:8000 \

@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class CurrencyRatesModel(models.Model):
@@ -10,6 +11,12 @@ class CurrencyRatesModel(models.Model):
 
     def __str__(self):
         return f"{self.base_currency} - {self.rate}"
+
+    def save(self, *args, **kwargs) -> None:
+        if self.rate <= 0.0:
+            raise ValidationError("A taxa de câmbio deve ser maior que zero.")
+
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Taxa de Câmbio"

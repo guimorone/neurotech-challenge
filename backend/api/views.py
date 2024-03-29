@@ -13,6 +13,9 @@ class CurrencyRatesViewSet(ModelViewSet):
     queryset = CurrencyRatesModel.objects.all()
     serializer_class = CurrencyRateSerializer
 
+    def check_if_currency_has_3_digits(self, currency: str) -> bool:
+        return len(currency) == 3
+
     def check_if_both_currency_exists(self, base_currency: str, to_currency: str) -> bool:
         return base_currency and to_currency
 
@@ -43,6 +46,15 @@ class CurrencyRatesViewSet(ModelViewSet):
             if self.check_if_both_currency_exists(base_currency, to_currency) is False:
                 return Response(
                     get_error_msg("CREATE_CURRENCY_RATES", status.HTTP_400_BAD_REQUEST),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if (
+                self.check_if_currency_has_3_digits(base_currency) is False
+                or self.check_if_currency_has_3_digits(to_currency) is False
+            ):
+                return Response(
+                    get_error_msg("CREATE_CURRENCY_RATES_3_DIGITS", status.HTTP_400_BAD_REQUEST),
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
