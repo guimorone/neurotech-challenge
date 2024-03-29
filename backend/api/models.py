@@ -3,10 +3,10 @@ from django.db import models
 
 class CurrencyRatesModel(models.Model):
     # Campo Id como chave primária (django.db.models.BigAutoField) -> Inserção automática do django
-    base_currency = models.CharField(max_length=3)
-    to_currency = models.CharField(max_length=3)
-    rate = models.FloatField()  # Considerando o valor unitário do `base_currency`
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    base_currency = models.CharField(max_length=3, verbose_name="Moeda base")
+    to_currency = models.CharField(max_length=3, verbose_name="Moeda destino")
+    rate = models.FloatField(verbose_name="Taxa de câmbio")  # Considerando o valor unitário do `base_currency`
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Data de criação")
 
     def __str__(self):
         return f"{self.base_currency} - {self.rate}"
