@@ -4,7 +4,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
-from utils.misc import format_datestring
+from utils.misc import format_datestring, get_error_msg
 from utils.currencies import get_currency_rates
 from .serializers import *
 
@@ -13,35 +13,42 @@ class CurrencyRatesViewSet(ModelViewSet):
     queryset = CurrencyRatesModel.objects.all()
     serializer_class = CurrencyRateSerializer
 
+    def check_if_both_currency_exists(self, base_currency: str, to_currency: str) -> bool:
+        return base_currency and to_currency
+
+    def check_if_forex_service_is_available(self, rates: list | str) -> bool:
+        return type(rates) == list
+
     def list(self, _: Request) -> Response:
         try:
-            queryset = self.filter_queryset(self.get_queryset())
-
-            page = self.paginate_queryset(queryset)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
+            queryset = self.get_queryset()
             serializer = self.get_serializer(queryset, many=True)
+
             data = [{**data, "created_at": format_datestring(data["created_at"])} for data in serializer.data]
 
             return Response(data, status=status.HTTP_200_OK)
         except:
             traceback.print_exc()
 
-            return Response("Erro interno ao listar taxas de câmbio!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                get_error_msg("LIST_CURRENCY_RATES", status.HTTP_500_INTERNAL_SERVER_ERROR),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     def create(self, request: Request, *args, **kwargs) -> Response:
         try:
             base_currency = request.data.get("base_currency")
             to_currency = request.data.get("to_currency")
 
-            if not base_currency or not to_currency:
-                return Response("Os campos `currency` e `rates` são obrigatórios!", status=status.HTTP_400_BAD_REQUEST)
+            if self.check_if_both_currency_exists(base_currency, to_currency) is False:
+                return Response(
+                    get_error_msg("CREATE_CURRENCY_RATES", status.HTTP_400_BAD_REQUEST),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             rates = get_currency_rates(base_currency, to_currency)
 
-            if type(rates) == str:
+            if self.check_if_forex_service_is_available(rates) is False:
                 return Response(rates, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
             data = [
@@ -61,7 +68,10 @@ class CurrencyRatesViewSet(ModelViewSet):
         except:
             traceback.print_exc()
 
-            return Response("Erro interno ao recuperar taxa de câmbio!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                get_error_msg("CREATE_CURRENCY_RATES", status.HTTP_500_INTERNAL_SERVER_ERROR),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     @action(methods=["DELETE"], detail=False, url_path="delete-all", url_name="delete-all")
     def delete_all(self, _: Request) -> Response:
@@ -72,4 +82,7 @@ class CurrencyRatesViewSet(ModelViewSet):
         except:
             traceback.print_exc()
 
-            return Response("Erro interno ao deletar resultados!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                get_error_msg("DELETE_ALL_CURRENCY_RATES", status.HTTP_500_INTERNAL_SERVER_ERROR),
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
