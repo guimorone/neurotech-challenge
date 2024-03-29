@@ -15,6 +15,38 @@ o Get historical rates from startDate to endDate \
 · Feel free to use any library you want for this project, there are no limitations! \
 This API might be helpful: <https://rapidapi.com/fixer/api/fixer-currency/>
 
+## Arquitetura
+
+A arquitetura do projeto foi pensada de maneira a ser escalável e de fácil manutenção.
+Para isso, foi utilizado o conceito de `Docker` para a criação de containers, que facilita a execução do projeto em qualquer ambiente.
+Além disso, foi utilizado o `Django` para a criação do backend, que é um framework robusto e que facilita a criação de APIs RESTful, além de utilizar a técnica de ORM (mapeamento objeto-relacional).
+Para o frontend, foi utilizado o `React`, que é uma biblioteca de JavaScript/TypeScript para a criação de interfaces de usuário.
+
+A imagem abaixo explica o fluxo principal do projeto:
+
+![Fluxo principal](./images/main_flow.jpg)
+
+A api externa para a obtenção das taxas de câmbio foi utilizada com auxílio da biblioteca [forex-python](https://pypi.org/project/forex-python/), que fornece uma API gratuita para a obtenção de taxas de câmbio.
+Foi considerada também utilizar a API recomendada no escopo do desafio (<https://rapidapi.com/fixer/api/fixer-currency/>), porém ela se encontra indisponível.
+
+### Banco de Dados
+
+Foi utilizado o banco de dados `Postgres` para armazenar as taxas de câmbio. A escolha foi feita por ser um banco de dados robusto e que suporta grande quantidade de dados. Nenhum recurso cloud foi utilizado, o banco foi criado a partir do `Docker` e a conexão foi feita localmente.
+
+Para este projeto, apenas uma tabela foi criada, sua modelagem pode ser vista abaixo:
+
+```python
+  ...
+  id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID') # Gerado automaticamente pelo Django
+  base_currency = models.CharField(max_length=3, verbose_name="Moeda base")
+  to_currency = models.CharField(max_length=3, verbose_name="Moeda destino")
+  rate = models.FloatField(verbose_name="Taxa de câmbio")  # Considerando o valor unitário do `base_currency`
+  created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name="Data de criação") # Gerado automaticamente pelo Django na criação do objeto
+  ...
+```
+
+![Modelagem do banco de dados](./images/db_model.png)
+
 ## Para rodar o projeto de maneira rápida e simples
 
 Utilizando `docker` (mais especificamente `docker compose`), é possível rodar o projeto de maneira rápida e simples. Para isso, basta seguir os passos abaixo:
